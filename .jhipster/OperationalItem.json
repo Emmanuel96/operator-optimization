@@ -1,0 +1,35 @@
+{
+  "changelogDate": "20241107131456",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "type",
+      "fieldType": "OperationalItemTypes",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "OPERATIONAL_ALARM,OPERATIONAL_ACTION"
+    },
+    {
+      "fieldName": "priorityScore",
+      "fieldType": "Double",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "dueDate",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "jpaMetamodelFiltering": false,
+  "name": "OperationalItem",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "location",
+      "relationshipName": "location",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": ["required"]
+    }
+  ],
+  "service": "serviceImpl"
+}

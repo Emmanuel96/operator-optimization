@@ -1,0 +1,128 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-operational-item-heading"
+        data-cy="OperationalItemCreateUpdateHeading"
+        jhiTranslate="operatorOptimisationApp.operationalItem.home.createOrEditLabel"
+      >
+        Create or edit a Operational Item
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
+          <label class="form-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="operatorOptimisationApp.operationalItem.type" for="field_type">Type</label>
+          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null">{{ 'operatorOptimisationApp.OperationalItemTypes.null' | translate }}</option>
+            <option *ngFor="let operationalItemTypes of operationalItemTypesValues" [value]="operationalItemTypes">
+              {{ 'operatorOptimisationApp.OperationalItemTypes.' + operationalItemTypes | translate }}
+            </option>
+          </select>
+          <div *ngIf="editForm.get('type')!.invalid && (editForm.get('type')!.dirty || editForm.get('type')!.touched)">
+            <small class="form-text text-danger" *ngIf="editForm.get('type')?.errors?.required" jhiTranslate="entity.validation.required">
+              This field is required.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="operatorOptimisationApp.operationalItem.priorityScore" for="field_priorityScore"
+            >Priority Score</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="priorityScore"
+            id="field_priorityScore"
+            data-cy="priorityScore"
+            formControlName="priorityScore"
+          />
+          <div
+            *ngIf="
+              editForm.get('priorityScore')!.invalid && (editForm.get('priorityScore')!.dirty || editForm.get('priorityScore')!.touched)
+            "
+          >
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('priorityScore')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('priorityScore')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="operatorOptimisationApp.operationalItem.dueDate" for="field_dueDate">Due Date</label>
+          <div class="input-group">
+            <input
+              id="field_dueDate"
+              data-cy="dueDate"
+              type="text"
+              class="form-control"
+              name="dueDate"
+              ngbDatepicker
+              #dueDateDp="ngbDatepicker"
+              formControlName="dueDate"
+            />
+            <button type="button" class="btn btn-secondary" (click)="dueDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label class="form-label" jhiTranslate="operatorOptimisationApp.operationalItem.location" for="field_location">Location</label>
+          <select
+            class="form-control"
+            id="field_location"
+            data-cy="location"
+            name="location"
+            formControlName="location"
+            [compareWith]="compareLocation"
+          >
+            <option *ngIf="!editForm.get('location')!.value" [ngValue]="null" selected></option>
+            <option [ngValue]="locationOption" *ngFor="let locationOption of locationsSharedCollection">{{ locationOption.id }}</option>
+          </select>
+        </div>
+        <div *ngIf="editForm.get(['location'])!.invalid && (editForm.get(['location'])!.dirty || editForm.get(['location'])!.touched)">
+          <small
+            class="form-text text-danger"
+            *ngIf="editForm.get(['location'])?.errors?.required"
+            jhiTranslate="entity.validation.required"
+          >
+            This field is required.
+          </small>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

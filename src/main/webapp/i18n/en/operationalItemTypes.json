@@ -1,0 +1,9 @@
+{
+  "operatorOptimisationApp": {
+    "OperationalItemTypes": {
+      "null": "",
+      "OPERATIONAL_ALARM": "OPERATIONAL_ALARM",
+      "OPERATIONAL_ACTION": "OPERATIONAL_ACTION"
+    }
+  }
+}

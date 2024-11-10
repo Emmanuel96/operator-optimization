@@ -1,0 +1,5 @@
+export enum OperationalItemTypes {
+  OPERATIONAL_ALARM = 'OPERATIONAL_ALARM',
+
+  OPERATIONAL_ACTION = 'OPERATIONAL_ACTION',
+}

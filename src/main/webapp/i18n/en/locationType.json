@@ -1,0 +1,9 @@
+{
+  "operatorOptimisationApp": {
+    "LocationType": {
+      "null": "",
+      "WELL": "WELL",
+      "PLANT": "PLANT"
+    }
+  }
+}

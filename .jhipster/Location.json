@@ -1,0 +1,44 @@
+{
+  "changelogDate": "20241107130122",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "uwi",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "latitude",
+      "fieldType": "Float",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "longitude",
+      "fieldType": "Float",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "LocationType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "WELL,PLANT"
+    }
+  ],
+  "jpaMetamodelFiltering": false,
+  "name": "Location",
+  "pagination": "no",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "pad",
+      "relationshipName": "pad",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceImpl"
+}
