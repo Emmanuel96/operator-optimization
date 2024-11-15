@@ -1,6 +1,8 @@
 package com.wailo.service;
 
 import com.wailo.service.dto.LocationDTO;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -53,4 +55,6 @@ public interface LocationService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Mono<Void> download();
 }

@@ -1,5 +1,7 @@
 package com.wailo.domain;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -7,6 +9,7 @@ import javax.validation.constraints.*;
 /**
  * A Pad.
  */
+@Data
 @Entity
 @Table(name = "pad")
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -24,6 +27,10 @@ public class Pad implements Serializable {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotNull
+    @Column(name = "ezops_id", nullable = false)
+    private Long ezopsId;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -32,6 +39,11 @@ public class Pad implements Serializable {
 
     public Pad id(Long id) {
         this.setId(id);
+        return this;
+    }
+
+    public Pad ezopsId(Long ezopsId) {
+        this.setEzopsId(ezopsId);
         return this;
     }
 

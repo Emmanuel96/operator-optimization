@@ -1,6 +1,8 @@
 package com.wailo.domain;
 
 import com.wailo.domain.enumeration.LocationType;
+import lombok.Data;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -8,6 +10,7 @@ import javax.validation.constraints.*;
 /**
  * A Location.
  */
+@Data
 @Entity
 @Table(name = "location")
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -28,13 +31,15 @@ public class Location implements Serializable {
     @Column(name = "uwi")
     private String uwi;
 
-    @NotNull
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude")
     private Float latitude;
 
-    @NotNull
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude")
     private Float longitude;
+
+    @NotNull
+    @Column(name = "ezops_id", nullable = false)
+    private Long ezopsId;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -52,6 +57,11 @@ public class Location implements Serializable {
 
     public Location id(Long id) {
         this.setId(id);
+        return this;
+    }
+
+    public Location ezopsId(Long ezopsId) {
+        this.setEzopsId(ezopsId);
         return this;
     }
 

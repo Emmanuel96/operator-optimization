@@ -1,6 +1,8 @@
 package com.wailo.service.impl;
 
+import com.wailo.config.ApplicationProperties;
 import com.wailo.domain.Pad;
+import com.wailo.models.ezops.responses.PadResponse;
 import com.wailo.repository.PadRepository;
 import com.wailo.service.PadService;
 import com.wailo.service.dto.PadDTO;
@@ -9,10 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  * Service Implementation for managing {@link Pad}.
@@ -26,10 +31,15 @@ public class PadServiceImpl implements PadService {
     private final PadRepository padRepository;
 
     private final PadMapper padMapper;
+    private final WebClient webClient;
+    private final ApplicationProperties appProperties;
 
-    public PadServiceImpl(PadRepository padRepository, PadMapper padMapper) {
+    public PadServiceImpl(PadRepository padRepository, PadMapper padMapper, WebClient webClient,
+                          ApplicationProperties appProperties) {
         this.padRepository = padRepository;
         this.padMapper = padMapper;
+        this.webClient = webClient;
+        this.appProperties = appProperties;
     }
 
     @Override
@@ -81,5 +91,33 @@ public class PadServiceImpl implements PadService {
     public void delete(Long id) {
         log.debug("Request to delete Pad : {}", id);
         padRepository.deleteById(id);
+    }
+
+    @Override
+    public Mono<Void> download(){
+        log.info("downloading pads");
+        return webClient.get().uri(appProperties.getEzOperationsBaseUrl() + "/pads")
+            .header("Authorization", appProperties.getEzOperationsBearerToken())
+            .header("Cookie", "XSRF-TOKEN=" + appProperties.getEzOperationsXsrfToken())
+            .retrieve()
+            .bodyToMono(PadResponse.class)
+            .doOnSuccess(res -> log.info("response: {}", res))
+            .doOnError(error -> log.error(error.getMessage()))
+            .flatMap(this::handlePadResponse);
+    }
+
+    private Mono<Void> handlePadResponse(PadResponse response){
+        response.getData()
+            .forEach(data -> {
+                Optional<Pad> pad = padRepository.findByEzopsId(data.getId());
+                if(pad.isEmpty()){
+                    Pad newLocation = new Pad()
+                        .ezopsId(data.getId())
+                        .name(data.getAlias());
+
+                    padRepository.save(newLocation);
+                }
+            });
+        return Mono.empty();
     }
 }

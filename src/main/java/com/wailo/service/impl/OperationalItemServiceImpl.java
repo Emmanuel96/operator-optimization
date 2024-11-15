@@ -1,6 +1,10 @@
 package com.wailo.service.impl;
 
+import com.wailo.config.ApplicationProperties;
 import com.wailo.domain.OperationalItem;
+import com.wailo.domain.enumeration.OperationalItemTypes;
+import com.wailo.models.ezops.responses.OperationalItemResponse;
+import com.wailo.repository.LocationRepository;
 import com.wailo.repository.OperationalItemRepository;
 import com.wailo.service.OperationalItemService;
 import com.wailo.service.dto.OperationalItemDTO;
@@ -9,10 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.wailo.utils.AppUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 /**
  * Service Implementation for managing {@link OperationalItem}.
@@ -26,10 +34,19 @@ public class OperationalItemServiceImpl implements OperationalItemService {
     private final OperationalItemRepository operationalItemRepository;
 
     private final OperationalItemMapper operationalItemMapper;
+    private final WebClient webClient;
+    private final ApplicationProperties appProperties;
+    private final LocationRepository locationRepository;
 
-    public OperationalItemServiceImpl(OperationalItemRepository operationalItemRepository, OperationalItemMapper operationalItemMapper) {
+    public OperationalItemServiceImpl(OperationalItemRepository operationalItemRepository,
+                                      OperationalItemMapper operationalItemMapper,
+                                      WebClient webClient, ApplicationProperties appProperties,
+                                      LocationRepository locationRepository) {
         this.operationalItemRepository = operationalItemRepository;
         this.operationalItemMapper = operationalItemMapper;
+        this.webClient = webClient;
+        this.appProperties = appProperties;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -85,5 +102,49 @@ public class OperationalItemServiceImpl implements OperationalItemService {
     public void delete(Long id) {
         log.debug("Request to delete OperationalItem : {}", id);
         operationalItemRepository.deleteById(id);
+    }
+
+    @Override
+    public Mono<Void> download(){
+        log.info("downloading locations");
+        webClient.get().uri(appProperties.getEzOperationsBaseUrl() + "/operational/actions")
+            .header("Authorization", appProperties.getEzOperationsBearerToken())
+            .header("Cookie", "XSRF-TOKEN=" + appProperties.getEzOperationsXsrfToken())
+            .retrieve()
+            .bodyToMono(OperationalItemResponse.class)
+            .doOnSuccess(res -> log.info("response: {}", res))
+            .doOnError(error -> log.error(error.getMessage()))
+            .map(res -> handleOperationalItemResponse(res, OperationalItemTypes.OPERATIONAL_ACTION))
+            .subscribe();
+
+        return webClient.get().uri(appProperties.getEzOperationsBaseUrl() + "/operational/alarms")
+            .header("Authorization", appProperties.getEzOperationsBearerToken())
+            .header("Cookie", "XSRF-TOKEN=" + appProperties.getEzOperationsXsrfToken())
+            .retrieve()
+            .bodyToMono(OperationalItemResponse.class)
+            .doOnSuccess(res -> log.info("response: {}", res))
+            .doOnError(error -> log.error(error.getMessage()))
+            .flatMap(res -> handleOperationalItemResponse(res, OperationalItemTypes.OPERATIONAL_ALARM));
+//            .subscribe();
+    }
+
+    private Mono<Void> handleOperationalItemResponse(OperationalItemResponse response,
+                                                     OperationalItemTypes type){
+        response.getData()
+            .forEach(data -> {
+                Optional<OperationalItem> opItem = operationalItemRepository.findByEzopsId(data.getId());
+                if(opItem.isEmpty()){
+                    OperationalItem newItem = new OperationalItem()
+                        .ezopsId(data.getId())
+                        .type(type)
+                        .priorityScore(AppUtils.parseStringToDouble(data.getPriorityScore()))
+                        .dueDate(data.getDueDate())
+                        .location(locationRepository.findByEzopsId(data.getLocationableId())
+                            .orElse(null));
+
+                    operationalItemRepository.save(newItem);
+                }
+            });
+        return Mono.empty();
     }
 }

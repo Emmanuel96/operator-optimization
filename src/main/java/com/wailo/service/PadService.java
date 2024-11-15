@@ -1,6 +1,8 @@
 package com.wailo.service;
 
 import com.wailo.service.dto.PadDTO;
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -53,4 +55,7 @@ public interface PadService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Mono<Void> download();
+
 }

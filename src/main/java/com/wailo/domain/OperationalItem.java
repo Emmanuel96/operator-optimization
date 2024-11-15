@@ -2,6 +2,8 @@ package com.wailo.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wailo.domain.enumeration.OperationalItemTypes;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.*;
@@ -10,6 +12,8 @@ import javax.validation.constraints.*;
 /**
  * A OperationalItem.
  */
+
+@Data
 @Entity
 @Table(name = "operational_item")
 @SuppressWarnings("common-java:DuplicatedBlocks")
@@ -28,15 +32,17 @@ public class OperationalItem implements Serializable {
     @Column(name = "type", nullable = false)
     private OperationalItemTypes type;
 
-    @NotNull
     @Column(name = "priority_score", nullable = false)
     private Double priorityScore;
 
     @Column(name = "due_date")
     private LocalDate dueDate;
 
-    @ManyToOne(optional = false)
     @NotNull
+    @Column(name = "ezops_id", nullable = false)
+    private Long ezopsId;
+
+    @ManyToOne(optional = false)
     @JsonIgnoreProperties(value = { "pad" }, allowSetters = true)
     private Location location;
 
@@ -48,6 +54,11 @@ public class OperationalItem implements Serializable {
 
     public OperationalItem id(Long id) {
         this.setId(id);
+        return this;
+    }
+
+    public OperationalItem ezopsId(Long ezopsId) {
+        this.setEzopsId(ezopsId);
         return this;
     }
 

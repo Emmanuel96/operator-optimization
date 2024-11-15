@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the ezops_id columns to entities.
+    -->
+    <changeSet id="20241113242567-1" author="jhipster">
+        <addColumn tableName="pad">
+            <column name="ezops_id" type="bigint">
+                <constraints unique="true" nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="location">
+            <column name="ezops_id" type="bigint">
+                <constraints unique="true" nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="operational_item">
+            <column name="ezops_id" type="bigint">
+                <constraints unique="true" nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+</databaseChangeLog>
