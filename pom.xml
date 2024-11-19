@@ -90,6 +90,7 @@
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
 
         <!-- jhipster-needle-maven-property -->
+        <version.org.optaplanner>9.44.0.Final</version.org.optaplanner>
     </properties>
 
     <dependencyManagement>
@@ -102,6 +103,13 @@
                 <scope>import</scope>
             </dependency>
             <!-- jhipster-needle-maven-add-dependency-management -->
+            <dependency>
+                <groupId>org.optaplanner</groupId>
+                <artifactId>optaplanner-bom</artifactId>
+                <type>pom</type>
+                <version>${version.org.optaplanner}</version>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -274,6 +282,14 @@
             <scope>provided</scope>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+        <dependency>
+            <groupId>org.optaplanner</groupId>
+            <artifactId>optaplanner-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.optaplanner</groupId>
+            <artifactId>optaplanner-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
